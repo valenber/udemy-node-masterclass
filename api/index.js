@@ -1,9 +1,13 @@
+/*eslint no-console: ["error", { allow: ["log"] }] */
 // Main file for the API
 
 // Dependencies
 const http = require('http');
 const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
+
+// Router
+const router = require('./router');
 
 // Handle requests
 const server = http.createServer((req, res) => {
@@ -23,9 +27,6 @@ const server = http.createServer((req, res) => {
   // Get the HTTP method
   const method = req.method.toLowerCase();
 
-  // Send reponse
-  res.end('Hey there\n');
-
   //Get the payload, if any
   const decoder = new StringDecoder('utf-8');
   let buffer = '';
@@ -35,13 +36,45 @@ const server = http.createServer((req, res) => {
 
   req.on('end', () => {
     buffer += decoder.end();
+    // Choose correct handler for current request
+    const chosenHandler = typeof router[trimmedPath] !== 'undefined'
+      ? router[trimmedPath]
+      : router.notFound;
 
-    // Log request info
-    console.log('Request payload: ', buffer);
+    // Assemble data object for the handler
+    const data = {
+      headers,
+      method,
+      payload: buffer,
+      queryStringObject,
+      trimmedPath
+    };
+
+    // Route the request to the handler specified in the router
+    chosenHandler(data, (statusCode, payload) => {
+      // Use status code returned by the handler or default to 200
+      statusCode = typeof statusCode === 'number'
+        ? statusCode
+        : 200;
+      // Use payload returned by the handler or default to empty object
+      payload = typeof payload === 'object'
+        ? payload
+        : {};
+      // Convert payload to a string
+      const payloadString = JSON.stringify(payload);
+
+      // Return the response
+      res.setHeader('Content-type', 'application/json');
+      res.writeHead(statusCode);
+      res.end(payloadString);
+
+      // Log request info
+      console.log('Responding with: ', statusCode, payloadString);
+    });    
   });  
-})
+});
 
 // Start the server and listen on port 3000
 server.listen(3000, () => {
-  console.log('Server is listening at port 3000 now')
-})
+  console.log('Server is listening at port 3000 now');
+});
