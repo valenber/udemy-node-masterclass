@@ -7,6 +7,7 @@ const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
 
 // Router
+const config = require('./config');
 const router = require('./router');
 
 // Handle requests
@@ -21,7 +22,7 @@ const server = http.createServer((req, res) => {
   // Get query string as an object
   const queryStringObject = parsedUrl.query;
 
-  // Get the headers and an object
+  // Get the headers as an object
   const headers = req.headers;
 
   // Get the HTTP method
@@ -74,7 +75,7 @@ const server = http.createServer((req, res) => {
   });  
 });
 
-// Start the server and listen on port 3000
-server.listen(3000, () => {
-  console.log('Server is listening at port 3000 now');
+// Start the server
+server.listen(config.port, () => {
+  console.log(`Server is listening at port ${config.port} in ${config.envName} mode`);
 });
