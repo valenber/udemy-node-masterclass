@@ -1,17 +1,43 @@
 /*eslint no-console: ["error", { allow: ["log"] }] */
 // Main file for the API
 
-// Dependencies
+// Node Libraries
 const http = require('http');
+const https = require('https');
 const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
+const fs = require('fs');
 
-// Router
+// Custom dependencies
 const config = require('./config');
 const router = require('./router');
 
-// Handle requests
-const server = http.createServer((req, res) => {
+// Instantiate HTTP server
+const httpServer = http.createServer((req, res) => {
+  unifiedServer(req,res);
+});
+
+// Start HTTP server
+httpServer.listen(config.httpPort, () => {
+  console.log(`Server is listening at port ${config.httpPort}`);
+});
+
+// Instantiate HTTPS server
+const httpsServerOptions = {
+  key: fs.readFileSync('./api/https/key.pem', 'utf8'),
+  cert: fs.readFileSync('./api/https/cert.pem', 'utf8')
+};
+const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
+  unifiedServer(req,res);
+});
+
+// Start HTTPS server
+httpsServer.listen(config.httpsPort, () => {
+  console.log(`Server is listening at port ${config.httpsPort}`);
+});
+
+// Server logic for HTTP and HTTPS
+const unifiedServer = (req, res) => {
   // Get the URL and parse it
   const parsedUrl = url.parse(req.url, true);
 
@@ -71,11 +97,6 @@ const server = http.createServer((req, res) => {
 
       // Log request info
       console.log('Responding with: ', statusCode, payloadString);
-    });    
-  });  
-});
-
-// Start the server
-server.listen(config.port, () => {
-  console.log(`Server is listening at port ${config.port} in ${config.envName} mode`);
-});
+    });
+  });
+};
