@@ -9,8 +9,9 @@ const StringDecoder = require('string_decoder').StringDecoder;
 const fs = require('fs');
 
 // Custom dependencies
-const config = require('./config');
-const router = require('./router');
+const config = require('./lib/config');
+const handlers = require('./lib/handlers');
+const parseJsonToObject = require('./lib/helpers').parseJsonToObject;
 
 // Instantiate HTTP server
 const httpServer = http.createServer((req, res) => {
@@ -70,11 +71,11 @@ const unifiedServer = (req, res) => {
 
     // Assemble data object for the handler
     const data = {
-      headers,
-      method,
-      payload: buffer,
+      trimmedPath,
       queryStringObject,
-      trimmedPath
+      method,
+      headers,
+      payload: parseJsonToObject(buffer)
     };
 
     // Route the request to the handler specified in the router
@@ -99,4 +100,11 @@ const unifiedServer = (req, res) => {
       console.log('Responding with: ', statusCode, payloadString);
     });
   });
+};
+
+// App routes
+const router = {
+  notFound: handlers.notFound,
+  ping: handlers.ping,
+  users: handlers.users
 };

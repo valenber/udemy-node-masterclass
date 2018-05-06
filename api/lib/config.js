@@ -6,14 +6,16 @@ const environments = {};
 environments.staging = {
   httpPort: 3000,
   httpsPort: 3001,
-  envName: 'staging'
+  envName: 'staging',
+  hashingSecret: '11maidsBornWalking'
 };
 
 // Production environment
 environments.production = {
   httpPort: 5000,
   httpsPort: 5001,
-  envName: 'production'
+  envName: 'production',
+  hashingSecret: 'drummerAte17reserved'
 };
 
 // Determine which environment is called via CLI
