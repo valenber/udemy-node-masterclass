@@ -62,7 +62,7 @@ handlers._users.post = (data, callback) => {
   if (isValidPayload(data.payload)) {
     // Extract values from payload
     const { firstName, lastName, phone, password } = data.payload;
-    // Verify the used doesn't already exist
+    // Verify the user doesn't already exist
     _data.read('users', phone, (err) => {
       if (err) {
         // Hash the password
@@ -97,9 +97,20 @@ handlers._users.post = (data, callback) => {
   }
 };
 // Users - GET
-// handlers._users.get = (data, callback) => {
-  
-// };
+// Required data: phone
+// Optional data: none
+// @@@TODO: only let authenticated user access their own object
+handlers._users.get = (data, callback) => {
+  const queryPhone = data.queryString.phone.trim();
+  const phone = typeof queryPhone === 'string' &&  queryPhone.length == 10
+    ? phone
+    : false;
+  if (phone) {
+
+  } else {
+    callback(400, {Error: 'Missing required field'});
+  }
+};
 // // Users - PUT
 // handlers._users.put = (data, callback) => {
   
