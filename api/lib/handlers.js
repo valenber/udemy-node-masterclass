@@ -5,7 +5,7 @@ Request handlers
 
 // Dependencies
 const _data = require('./data');
-const hash = require('./helpers').hash;
+const { hash } = require('./helpers');
 
 const handlers = {};
 
@@ -101,12 +101,20 @@ handlers._users.post = (data, callback) => {
 // Optional data: none
 // @@@TODO: only let authenticated user access their own object
 handlers._users.get = (data, callback) => {
-  const queryPhone = data.queryString.phone.trim();
+  const queryPhone = data.queryStringObject.phone.trim();
   const phone = typeof queryPhone === 'string' &&  queryPhone.length == 10
-    ? phone
+    ? queryPhone
     : false;
   if (phone) {
-
+    _data.read('users', phone, (err, data) => {
+      if (!err && data) {
+        // Remove the hashed password from the user object
+        delete data.hashedPassword;
+        callback(200, data);
+      } else {
+        callback(404);
+      }
+    });
   } else {
     callback(400, {Error: 'Missing required field'});
   }

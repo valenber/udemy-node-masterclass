@@ -5,7 +5,7 @@
 const http = require('http');
 const https = require('https');
 const url = require('url');
-const StringDecoder = require('string_decoder').StringDecoder;
+const { StringDecoder } = require('string_decoder');
 const fs = require('fs');
 
 // Custom dependencies
