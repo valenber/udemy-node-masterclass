@@ -120,9 +120,67 @@ handlers._users.get = (data, callback) => {
   }
 };
 // // Users - PUT
-// handlers._users.put = (data, callback) => {
-  
-// };
+// Required data: phone
+// Optional data: firstName, lastName, password (at least one must be specified)
+// @@@Todo: Only allow authnticated user to update their own object
+handlers._users.put = (data, callback) => {
+  // Validate required field
+  const queryPhone = data.payload.phone.trim();
+  const phone = typeof queryPhone === 'string' &&  queryPhone.length == 10
+    ? queryPhone
+    : false;
+
+  // validate optional field(s)
+  let firstName, lastName, password;
+
+  if (data.payload.firstName) {
+    const queryFirstName = data.payload.firstName.trim();
+    firstName = typeof queryFirstName == 'string' && queryFirstName.length >= 1 
+      ? queryFirstName
+      : false;
+  }
+  if (data.payload.lastName) {
+    const queryLastName = data.payload.lastName.trim();
+    lastName = typeof queryLastName == 'string' && queryLastName.length >= 1 
+      ? queryLastName
+      : false;
+  }
+  if (data.payload.password) {
+    const queryPassword = data.payload.password.trim();
+    password = typeof queryPassword == 'string' && queryPassword.length >= 1 
+      ? queryPassword
+      : false;
+  }
+  if (phone) {
+    // Error if no update data is sent
+    if (firstName || lastName || password) {
+      // Lookup the user
+      _data.read('users', phone, (err, userData) => {
+        if (!err && userData) {
+          // Update the user data
+          if (firstName) userData.firstName = firstName;
+          if (lastName) userData.lastName = lastName;
+          if (password) userData.hashedPassword = hash(password);
+          // Store the updated userData object
+          _data.update('users', phone, userData, (err) => {
+            if (!err) {
+              callback(200);
+            } else {
+              console.log(err);
+              callback(500, {Error: 'Could not update the user'});
+            }
+          });
+        } else {
+          callback(400, {Error: 'Requested user does not exist'});
+        }
+      });
+    } else {
+      callback(400, {Error: 'Missing data to update'});
+    }
+  } else {
+    callback(400, {Error: 'Missing required field'});
+  }
+};
 // // Users - DELETE
 // handlers._users.delete = (data, callback) => {
   
