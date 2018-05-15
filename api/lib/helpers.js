@@ -22,13 +22,32 @@ helpers.hash = string => {
   }
 };
 
-//Parse JSON string into object, without throwing
+// Parse JSON string into object, without throwing
 helpers.parseJsonToObject = string => {
   try {
     const object = JSON.parse(string);
     return object;
   } catch(e) {
     return {};
+  }
+};
+
+// Generate random alphanum string of a given length
+helpers.createRandomString = strLength => {
+  const length = typeof strLength === 'number' && strLength > 0
+    ? strLength
+    : false;
+
+  if (length) {
+    const validCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for(let i = 1; i <= length; i++) {
+      const rndChar = validCharacters.charAt(Math.floor(Math.random() * validCharacters.length));
+      result += rndChar;
+    }
+    return result;
+  } else {
+    return false;
   }
 };
 
