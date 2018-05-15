@@ -11,7 +11,7 @@ const fs = require('fs');
 // Custom dependencies
 const config = require('./lib/config');
 const handlers = require('./lib/handlers');
-const parseJsonToObject = require('./lib/helpers').parseJsonToObject;
+const { parseJsonToObject } = require('./lib/helpers');
 
 // Instantiate HTTP server
 const httpServer = http.createServer((req, res) => {
