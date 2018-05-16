@@ -7,7 +7,8 @@ environments.staging = {
   httpPort: 3000,
   httpsPort: 3001,
   envName: 'staging',
-  hashingSecret: '11maidsBornWalking'
+  hashingSecret: '11maidsBornWalking',
+  maxChecks: 5
 };
 
 // Production environment
@@ -15,7 +16,8 @@ environments.production = {
   httpPort: 5000,
   httpsPort: 5001,
   envName: 'production',
-  hashingSecret: 'drummerAte17reserved'
+  hashingSecret: 'drummerAte17reserved',
+  maxChecks: 5
 };
 
 // Determine which environment is called via CLI

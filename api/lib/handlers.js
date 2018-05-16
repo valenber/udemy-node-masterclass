@@ -397,4 +397,53 @@ handlers._tokens.verifyToken = (id, phone, callback) => {
   });
 };
 
+// Checks
+handlers.checks = (data, callback) => {
+  const acceptedMethods = ['post', 'get', 'put', 'delete'];
+  if (acceptedMethods.includes(data.method)) {
+    handlers.checks[data.method](data, callback);
+  } else {
+    callback(405);
+  }
+};
+
+// Container for checks methods
+handlers._checks = {};
+
+// Checks - POST
+// Required data: protocol, url, method, sucessCodes, timeoutSeconds
+handlers._checks.post = (data, callback) => {
+  // Validate payload
+  const isValidPayload = obj => {
+    if (typeof obj.protocol !== 'string' || !['http', 'https'].includes(obj.protocol)) return false;
+    if (typeof obj.url !== 'string' || obj.extend.length <= 0) return false;
+    if (typeof obj.method !== 'string' 
+      || !['post', 'get', 'put', 'delete'].includes(obj.method)) return false;
+    if (!Array.isArray(obj.sucessCodes) || obj.sucessCodes.length <= 0) return false;
+    if (typeof obj.timeoutSeconds !== 'number' 
+      || obj.timeoutSeconds % 1 !== 0 
+      || obj.timeoutSeconds < 1
+      || obj.timeoutSeconds > 5) return false;
+    return true;
+  };
+  if (isValidPayload(data.payload)) {
+    const { protocol, url, method, sucessCodes, timeoutSeconds } = data.payload;
+    //  
+  } else {
+    callback(400);
+  }
+};
+// Checks - GET
+handlers._checks.get = (data, callback) => {
+
+};
+// Checks - PUT
+handlers._checks.put = (data, callback) => {
+
+};
+// Checks - DELETE
+handlers._checks.delete = (data, callback) => {
+
+};
+
 module.exports = handlers;
